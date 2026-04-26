@@ -3,24 +3,24 @@ body {
   background: #000;
   font-family: 'Share Tech Mono', monospace;
   color: #ff9d00;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 html {
-  scroll-behavior: smooth;
-}
-
-html, body {
   height: 100%;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  overscroll-behavior-y: none;
 }
 
 .container {
+  flex: 1 0 auto;
   display: flex;
   flex-direction: column;
   gap: 12px;
   padding: 10px;
+  box-sizing: border-box;
 }
 
 .station {

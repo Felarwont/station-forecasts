@@ -97,26 +97,6 @@ async function update() {
 update();
 setInterval(update, 15000);
 
-let ticking = false;
-
-window.addEventListener("scroll", () => {
-  const y = window.scrollY;
-
-  if (!ticking) {
-    requestAnimationFrame(() => {
-      const stretch = Math.min(y * 0.0008, 0.02);
-      document.body.style.transform = `scaleY(${1 + stretch})`;
-      ticking = false;
-    });
-
-    ticking = true;
-  }
-});
-
-setInterval(() => {
-  document.body.style.transform = "scaleY(1)";
-}, 150);
-
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js");
 }

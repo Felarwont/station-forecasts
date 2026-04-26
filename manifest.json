@@ -1,6 +1,6 @@
 {
   "name": "Station Forecasts",
-  "short_name": "Board",
+  "short_name": "Station Forecasts",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#000000",

@@ -1,0 +1,72 @@
+body {
+  margin: 0;
+  background: #000;
+  font-family: 'Share Tech Mono', monospace;
+  color: #ff9d00;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html, body {
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 10px;
+}
+
+.station {
+  border: 1px solid #222;
+  border-radius: 10px;
+  padding: 12px;
+  background: #050505;
+  box-shadow: 0 0 10px rgba(255, 140, 0, 0.15);
+}
+
+.station-title {
+  font-size: 18px;
+  color: #ffb300;
+  margin-bottom: 4px;
+}
+
+.station-desc {
+  font-size: 12px;
+  color: #777;
+  margin-bottom: 10px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px dashed #222;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.route {
+  width: 50px;
+}
+
+.dest {
+  flex: 1;
+  text-align: right;
+  word-break: break-word;
+}
+
+.time {
+  width: 60px;
+  text-align: right;
+  color: #ffb300;
+}

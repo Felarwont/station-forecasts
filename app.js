@@ -49,7 +49,7 @@ async function fetchStation(station) {
         short: r.routeShortName,
         dest: r.whereGo,
         time: r.arrivalTimeInSec >= 60
-          ? Math.round(r.arrivalTimeInSec / 60)
+          ? Math.floor(r.arrivalTimeInSec / 60)
           : "<1"
       }));
 

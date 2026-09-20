@@ -1,102 +1,91 @@
-const URL = "https://smarttransport.online/magnitogorsk/php/apiRequest.php?getStationForecasts.php";
+const API = 'https://smarttransport.online/magnitogorsk/php/apiRequest.php';
 
-const stations = {
-  "Цирк": {
+const stops = [
+  {
     id: 10116,
-    description: "в сторону Площадь Мира"
+    title: 'Цирк',
+    description: 'в сторону Площадь Мира'
   },
-  "Юность": {
+  {
     id: 10017,
-    description: "в сторону Проспект Карла Маркса 115"
+    title: 'Юность',
+    description: 'в сторону Проспект Карла Маркса 115'
   },
-  "Улица Труда": {
+  {
     id: 10053,
-    description: "в сторону Улица Бориса Ручьева"
+    title: 'Улица Труда',
+    description: 'в сторону Улица Бориса Ручьева'
   }
-};
+];
 
-function getPayload(station_id) {
-  return {
-    t: "11111111-50b3-4fec-b922-8a50a1d38366",
-    ct: 26,
-    cd: "getStationForecasts.php",
-    reg: 74004,
-    w: -1,
-    data: {
-      wuid: 22894495672,
-      sid: station_id
-    }
-  };
+async function getStopInfo(stopId) {
+
 }
 
-async function fetchStation(station) {
-  try {
-    const res = await fetch(URL, {
-      method: "POST",
+async function getRoutes(stopId) {
+  const response = await fetch(API,
+    {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(getPayload(station.id))
-    });
+      body: JSON.stringify(
+        {
+          t: '11111111-50b3-4fec-b922-8a50a1d38366',
+          ct: 26,
+          cd: 'getStationForecasts.php',
+          reg: 74004,
+          data: {
+            sid: stopId
+          }
+        }
+      )
+    }
+  );
 
-    const json = await res.json();
+  if (!response.ok) {
+    throw new Error('Error, status:', response.status);
+  }
 
-    if (json.r !== "ok") return [];
+  const json = await response.json();
 
-    return json.data
-      .sort((a, b) => a.arrivalTimeInSec - b.arrivalTimeInSec)
-      .map(r => ({
-        short: r.routeShortName,
-        dest: r.whereGo,
-        time: r.arrivalTimeInSec >= 60
-          ? Math.floor(r.arrivalTimeInSec / 60)
-          : "<1"
-      }));
+  if (json.r !== 'ok') {
+    console.error('API error:', json)
+  }
 
-  } catch (e) {
-    console.error("API error:", e);
-    return [];
+  return json.data
+    .sort((a, b) => a.arrivalTimeInSec - b.arrivalTimeInSec)
+    .map(route => ({
+      name: route.routeShortName,
+      destination: route.whereGo,
+      time: Math.floor(route.arrivalTimeInSec / 60) || "<1"
+    }))
+}
+
+async function main() {
+  const app = document.getElementById('app');
+  for (const stop of stops) {
+    const station = document.createElement('div');
+    station.className = 'station';
+
+    let html = 
+      `<div class=station-title>${stop.title}</div>
+      <div class=station-desc>${stop.description}</div>`
+
+    const routes = await getRoutes(stop.id);
+
+    for (const route of routes) {
+      html +=
+        `<div class=row>
+          <div class=route>${route.name}</div>
+          <div class=dest>${route.destination}</div>
+          <div class=time>${route.time}м</div>
+        </div>`
+    }
+    station.innerHTML = html
+    app.appendChild(station)
+
   }
 }
 
-function renderStation(name, station, routes) {
-  const div = document.createElement("div");
-  div.className = "station";
-
-  let html = 
-    `<div class="station-title">${name}</div>
-    <div class="station-desc">${station.description}</div>`;
-
-  if (!routes.length) {
-    html += `<div style="color:#555">Нет данных...</div>`;
-  } else {
-    routes.forEach(r => {
-      html += 
-        `<div class="row">
-          <div class="route">${r.short}</div>
-          <div class="dest">${r.dest}</div>
-          <div class="time">${r.time}м</div>
-        </div>`;
-    });
-  }
-
-  div.innerHTML = html;
-  return div;
-}
-
-async function update() {
-  const app = document.getElementById("app");
-  app.innerHTML = "";
-
-  for (const [name, station] of Object.entries(stations)) {
-    const routes = await fetchStation(station);
-    app.appendChild(renderStation(name, station, routes));
-  }
-}
-
-update();
-setInterval(update, 15000);
-
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./sw.js");
-}
+main();

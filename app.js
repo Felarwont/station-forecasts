@@ -91,8 +91,8 @@ async function main() {
       html += '<div style=color:#555>Ошибка получения данных...</div>';
     }
 
-    station.innerHTML = html
-    app.appendChild(station)
+    station.innerHTML = html;
+    app.appendChild(station);
 
   }
 }

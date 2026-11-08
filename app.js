@@ -1,5 +1,7 @@
 const API = 'https://smarttransport.online/magnitogorsk/php/apiRequest.php';
 
+const app = document.getElementById('app');
+
 const stops = [
   {
     id: 10116,
@@ -44,13 +46,13 @@ async function getRoutes(stopId) {
   );
 
   if (!response.ok) {
-    throw new Error('HTTP Error, status:', response.status);
+    throw new Error(`HTTP Error, status: ${response.status}`);
   }
 
   const json = await response.json();
 
   if (json.r !== 'ok') {
-    throw new Error('API error:', json);
+    throw new Error(`API error: ${json}`);
   }
 
   return json.data
@@ -62,24 +64,28 @@ async function getRoutes(stopId) {
     }));
 }
 
-async function main() {
-  const app = document.getElementById('app');
-
+function renderStopCard() {
   for (const stop of stops) {
     const station = document.createElement('div');
     station.className = 'station';
+    station.dataset.id = stop.id;
 
-    let html = 
+    station.innerHTML =
       `<div class=station-title>${stop.title}</div>
       <div class=station-dir>${stop.direction}</div>`;
+    app.appendChild(station);
+  }
+}
 
+async function main() {
+  for (const station of document.getElementsByClassName('station')) {
     try {
-      const routes = await getRoutes(stop.id);
+      const routes = await getRoutes(station.dataset.id);
       if (!routes.length) {
-        html += '<div style=color:#555>Трамваев нет</div>';
+        station.innerHTML += '<div style=color:#555>Трамваев нет</div>';
       } else {
         routes.forEach(route => (
-          html +=
+          station.innerHTML +=
             `<div class=row>
               <div class=route>${route.name}</div>
               <div class=dest>${route.destination}</div>
@@ -88,13 +94,10 @@ async function main() {
         ));
       }
     } catch (Error) {
-      html += '<div style=color:#555>Ошибка получения данных...</div>';
+      station.innerHTML += '<div style=color:#555>Ошибка получения данных</div>';
     }
-
-    station.innerHTML = html;
-    app.appendChild(station);
-
   }
 }
 
+renderStopCard()
 main();
